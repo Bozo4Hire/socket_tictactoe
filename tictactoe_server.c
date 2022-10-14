@@ -73,7 +73,12 @@ int main()
     do
     {
         board();
-        player = (player % 2) ? 1 : 2;
+        if(player%2 != 0){
+            player = 1;
+        }
+        else{
+            player = 2;
+        }
 
         printf("Player %d, enter a number:  ", player);
         scanf("%d", &choice);
