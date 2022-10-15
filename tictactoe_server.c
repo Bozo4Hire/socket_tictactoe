@@ -23,13 +23,13 @@ int main()
 
     // Game variables init.
     char none;
-    int player = 1, i, choice;
+    int player = 1, i, choice, send_bool = 0;
     char mark;
 
     // Sockety vars init.
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
-    int opt = 1, loop = 1;
+    int opt = 1, loop = 1; 
     int addrlen = sizeof(address);
 
     // Creating socket file descriptor
@@ -75,13 +75,18 @@ int main()
         board();
         if(player%2 != 0){
             player = 1;
+            printf("Player %d, enter a number:  ", player);
+            scanf("%d", &choice);
+            send_bool = 1;
         }
         else{
             player = 2;
+            printf("Player %d turn...\n", player);
+            
+            char buffer[1024] = {0};
+            valread = read( new_socket , buffer, 1024);
+            choice = atoi(buffer);
         }
-
-        printf("Player %d, enter a number:  ", player);
-        scanf("%d", &choice);
 
         mark = (player == 1) ? 'X' : 'O';
 
@@ -118,9 +123,18 @@ int main()
 
             player--;
             scanf("%c", &none);
+            send_bool = 0;
         }
-        i = checkwin();
 
+        if(player == 1 && send_bool == 1){
+            char input[10];
+            sprintf(input, "%i", choice);
+            char *msg = input;
+            send(new_socket , msg , strlen(msg) , 0 );
+            send_bool = 0;
+        }
+
+        i = checkwin();
         player++;
     }while (i ==  - 1);
     
